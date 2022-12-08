@@ -64,12 +64,14 @@ public class Main {
 
         playerNum = 0;
 
-        while (!Arrays.equals(task.getAnswer(), task.getUnknownWord())) {
+        while (task.checkOnUnderlining()) {
+
             displayInfo(task);
             displayBalance(players);
+
             System.out.print("Ваш ход, " + players[playerNum].getNickname() + ": ");
             resultOfDrum = drum.spin();
-            System.out.print("\t\tНа барабане\t\t" + resultOfDrum + "\n");
+            System.out.print("\t\tНА БАРАБАНЕ \t\t" + resultOfDrum + "\n");
 
             if (determinateSectorAndNextMove(resultOfDrum) == 0) { // Переход хода
                 point = 0;
@@ -88,11 +90,16 @@ public class Main {
             symbol = scanner.nextLine();
 
             if (task.checkCharOnExist(symbol)) {
-                players[playerNum].setPoints(point);
+                players[playerNum].setPoints(point * task.getNumOfLetters());
             } else {
                 playerNum++;
                 playerNum = checkOnThirdPlayer(playerNum);
             }
         }
+
+        displayInfo(task);
+
+        System.out.println("Победил игрок " + players[playerNum].getNickname() + " и заработал" +
+                players[playerNum].getPoints() + " баллов!");
     }
 }

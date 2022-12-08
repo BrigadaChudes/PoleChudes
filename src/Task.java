@@ -6,6 +6,16 @@ import java.util.Scanner;
 public class Task {
     private String questionText;
     private String answer;
+    private int numOfLetters;
+
+    public boolean checkOnUnderlining(){
+        boolean isCheck;
+        for (var item: this.getUnknownWord()){
+            if (item == '_')
+                return true;
+        }
+        return false;
+    }
 
     private char [] unknownWord = new char[100];
 
@@ -94,14 +104,20 @@ public class Task {
             this.unknownWord[i] = '_';
     }
 
+    public int getNumOfLetters(){
+        return this.numOfLetters;
+    }
+
     public boolean checkCharOnExist(String symbol){
         char[] arrCompare = this.getAnswer();
         boolean isExist = false;
+        this.numOfLetters = 0;
 
         for(int i = 0; i < arrCompare.length; i++) {
             if(Character.toString(arrCompare[i]).toLowerCase().equals(symbol.toLowerCase())){
                 unknownWord[i] = symbol.toCharArray()[0];
                 isExist = true;
+                numOfLetters++;
             }
         }
         return isExist;
