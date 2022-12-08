@@ -1,17 +1,48 @@
 package src;
 
+import java.io.FileWriter;
 import java.time.DayOfWeek;
 import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
 
+    static int checkOnThirdPlayer(int playerNum) {
+        return playerNum == 3 ? 0 : playerNum;
+    }
+
+    static void displayInfo(Task task) {
+        System.out.print(task.getQuestionText() + " ");
+
+        for (int i = 0; i < task.getLengthUnknownWord(); i++) {
+            System.out.print(task.getUnknownWord()[i]);
+        }
+    }
+
+    static void displayBalance(Player[] players) {
+        System.out.println("\nБаланс игроков: \t\t 1 игрок \t 2 игрок \t 3 игрок\n" +
+                "\t\t\t\t\t\t\t" + players[0].getPoints() + " \t\t " +
+                players[1].getPoints() + " \t\t\t " + players[2].getPoints());
+    }
+
+    static int determinateSectorAndNextMove(String resultOfDrum) {
+
+
+        if (resultOfDrum.equals("переход хода")) {
+            return 0;
+        } else if (resultOfDrum.equals("+")) {
+            return 1;
+        }
+
+        return 2;
+    }
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
+        Drum drum = new Drum();
         Player[] players = new Player[3];
-        for (int i = 0; i < players.length; i++){
-            System.out.println("Игрок №" + (i+1) + ".");
+        for (int i = 0; i < players.length; i++) {
+            System.out.println("Игрок №" + (i + 1) + ".");
             players[i] = new Player(scanner);
         }
 
@@ -21,22 +52,47 @@ public class Main {
 
         System.out.println
                 ("Здравствуйте, уважаемые дамы и господа!\n" +
-                "В консоли капитал-шоу \"Поле чудес\"! \n" +
-                "И как обычно под аплодисменты зрительного зала, я приглашаю в студию тройку игроков: \n\n\t" +
-                players[0].getNickname() + ", " + players[1].getNickname() + ", " + players[2].getNickname()
-                + ".\n\nВ студию!");
+                        "В консоли капитал-шоу \"Поле чудес\"! \n" +
+                        "И как обычно под аплодисменты зрительного зала, я приглашаю в студию тройку игроков: \n\n\t" +
+                        players[0].getNickname() + ", " + players[1].getNickname() + ", " + players[2].getNickname()
+                        + ".\n\nВ студию!");
 
         task.generateNewQuestion();
 
-        checkOnExit = true;
+        int point = 0, playerNum;
+        String symbol, resultOfDrum;
 
-        do{
+        playerNum = 0;
 
-            System.out.print(task.getQuestionText());
-            for(int i = 0; i < task.getLengthUnknownWord(); i++){
-                System.out.print(task.getUnknownWord()[i]);
+        while (!Arrays.equals(task.getAnswer(), task.getUnknownWord())) {
+            displayInfo(task);
+            displayBalance(players);
+            System.out.print("Ваш ход, " + players[playerNum].getNickname() + ": ");
+            resultOfDrum = drum.spin();
+            System.out.print("\t\tНа барабане\t\t" + resultOfDrum + "\n");
+
+            if (determinateSectorAndNextMove(resultOfDrum) == 0) { // Переход хода
+                point = 0;
+                playerNum++;
+                playerNum = checkOnThirdPlayer(playerNum);
+                System.out.print("Ваш ход, " + players[playerNum].getNickname() + ": ");
+            } else if (determinateSectorAndNextMove(resultOfDrum) == 1) { // Сектор +
+                point = 0;
+                task.sectorPlus(scanner);
+                continue;
+            } else if (determinateSectorAndNextMove(resultOfDrum) == 2) { // Все ок
+                point = Integer.parseInt(resultOfDrum);
             }
 
-        }while (!checkOnExit);
+            System.out.print("Буква: ");
+            symbol = scanner.nextLine();
+
+            if (task.checkCharOnExist(symbol)) {
+                players[playerNum].setPoints(point);
+            } else {
+                playerNum++;
+                playerNum = checkOnThirdPlayer(playerNum);
+            }
+        }
     }
 }

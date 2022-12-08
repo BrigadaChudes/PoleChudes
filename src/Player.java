@@ -21,7 +21,7 @@ public class Player {
     }
 
     public void setPoints(int points) {
-        this.points = points;
+        this.points += points;
     }
 
     public Player(Scanner scanner) {

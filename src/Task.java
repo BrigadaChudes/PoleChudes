@@ -1,6 +1,7 @@
 package src;
 
 import java.io.*;
+import java.util.Scanner;
 
 public class Task {
     private String questionText;
@@ -49,6 +50,37 @@ public class Task {
 
     }
 
+    public void sectorPlus(Scanner scanner){
+        boolean isCorrect;
+        int orderOfLetter = 0;
+
+        do {
+            isCorrect = true;
+
+            System.out.print("Введите букву, которую нужно открыть: ");
+
+            try {
+                orderOfLetter = Integer.parseInt(scanner.nextLine());
+            }catch (Exception exception){
+                System.out.println("Было введено неправильное значение. Повторите ввод.");
+                isCorrect = false;
+            }
+
+            if(!isCorrect && (this.answer.length() < orderOfLetter || orderOfLetter <= 0)){
+                System.out.println("Порядок буквы больше длины загадонного слова.");
+                isCorrect = false;
+            }
+
+            if (!isCorrect && this.unknownWord[orderOfLetter] != '_'){
+                System.out.println("Была выбрана уже открытая буква!");
+                isCorrect = false;
+            }
+
+        }while (!isCorrect);
+
+        this.unknownWord[orderOfLetter-1] = this.getAnswer()[orderOfLetter-1];
+    }
+
     public static int rnd(int max)
     {
         return (int) (Math.random() * ++max);
@@ -67,7 +99,7 @@ public class Task {
         boolean isExist = false;
 
         for(int i = 0; i < arrCompare.length; i++) {
-            if(Character.toString(arrCompare[i]).equals(symbol)){
+            if(Character.toString(arrCompare[i]).toLowerCase().equals(symbol.toLowerCase())){
                 unknownWord[i] = symbol.toCharArray()[0];
                 isExist = true;
             }

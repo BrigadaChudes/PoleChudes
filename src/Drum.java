@@ -8,7 +8,7 @@ public class Drum {
         return (int) (Math.random() * ++max);
     }
 
-    private String spin(){
-        return points[rnd(23)];
+    public String spin(){
+        return points[rnd(22)];
     }
 }
