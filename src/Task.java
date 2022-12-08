@@ -1,23 +1,29 @@
 package src;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
 
 public class Task {
     private String questionText;
     private String answer;
+
+    private char [] unknownWord = new char[100];
+
     private String [][] matrixOfQuestions = new String [100][2];
 
     public String getQuestionText() {
         return questionText;
     }
 
-    public String getAnswer() {
-        return answer;
+    public int getLengthUnknownWord(){
+        return answer.length();
+    }
+
+    public char[] getUnknownWord(){
+        return  this.unknownWord;
+    }
+
+    public char[] getAnswer() {
+        return answer.toCharArray();
     }
 
     private void fillMatrixOfQuestions(){
@@ -49,14 +55,28 @@ public class Task {
     }
 
     public void generateNewQuestion(){
-        int link = rnd(100);
+        int link = rnd(10);
         this.questionText = matrixOfQuestions[link][0];
         this.answer = matrixOfQuestions[link][1];
+        for(int i = 0; i < answer.length(); i++)
+            this.unknownWord[i] = '_';
+    }
+
+    public boolean checkCharOnExist(String symbol){
+        char[] arrCompare = this.getAnswer();
+        boolean isExist = false;
+
+        for(int i = 0; i < arrCompare.length; i++) {
+            if(Character.toString(arrCompare[i]).equals(symbol)){
+                unknownWord[i] = symbol.toCharArray()[0];
+                isExist = true;
+            }
+        }
+        return isExist;
     }
 
     public Task()
     {
-        // Тас
         fillMatrixOfQuestions();
     }
 }
