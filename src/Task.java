@@ -97,7 +97,7 @@ public class Task {
     }
 
     public void generateNewQuestion(){
-        int link = rnd(10);
+        int link = rnd(9);
         this.questionText = matrixOfQuestions[link][0];
         this.answer = matrixOfQuestions[link][1];
         for(int i = 0; i < answer.length(); i++)

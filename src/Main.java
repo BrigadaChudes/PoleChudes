@@ -37,7 +37,7 @@ public class Main {
         return 2;
     }
 
-    public static boolean isContinue(Scanner scanner){
+    public static boolean isContinue(Scanner scanner) {
 
         String text;
         boolean isCorrect;
@@ -56,15 +56,14 @@ public class Main {
                 isCorrect = false;
             }
 
-            if(!isCorrect && !text.toLowerCase().equals("да") &&
-                    !text.toLowerCase().equals("нет")) {
+            if (isCorrect && (text.toLowerCase() != "да" || text.toLowerCase() != "нет")) {
                 System.out.println("Введите: Да или Нет.");
                 isCorrect = false;
             }
         }
-        while (!isCorrect);
+        while (isCorrect);
 
-        return text == "Да" ? true : false;
+        return text.toLowerCase() == "да" ? true : false;
     }
 
     public static void main(String[] args) {
@@ -73,7 +72,8 @@ public class Main {
         Player[] players = new Player[3];
         int point = 0, playerNum;
         String symbol, resultOfDrum;
-        Boolean isExit, willContinue;;
+        Boolean isExit, willContinue;
+        ;
         for (int i = 0; i < players.length; i++) {
             System.out.println("Игрок №" + (i + 1) + ".");
             players[i] = new Player(scanner);
@@ -94,52 +94,48 @@ public class Main {
 
         willContinue = true;
 
-        do {
-            playerNum = 0;
+        playerNum = 0;
 
-            while (task.checkOnUnderlining()) {
+        while (task.checkOnUnderlining()) {
 
-                displayInfo(task);
-                displayBalance(players);
+            displayInfo(task);
+            displayBalance(players);
 
+            System.out.print("Ваш ход, " + players[playerNum].getNickname() + ": ");
+            resultOfDrum = drum.spin();
+            System.out.print("\t\tНА БАРАБАНЕ \t\t" + resultOfDrum + "\n");
+
+            if (determinateSectorAndNextMove(resultOfDrum) == 0) { // Переход хода
+                point = 0;
+                playerNum++;
+                playerNum = checkOnThirdPlayer(playerNum);
                 System.out.print("Ваш ход, " + players[playerNum].getNickname() + ": ");
                 resultOfDrum = drum.spin();
                 System.out.print("\t\tНА БАРАБАНЕ \t\t" + resultOfDrum + "\n");
-
-                if (determinateSectorAndNextMove(resultOfDrum) == 0) { // Переход хода
-                    point = 0;
-                    playerNum++;
-                    playerNum = checkOnThirdPlayer(playerNum);
-                    System.out.print("Ваш ход, " + players[playerNum].getNickname() + ": ");
-                    resultOfDrum = drum.spin();
-                    System.out.print("\t\tНА БАРАБАНЕ \t\t" + resultOfDrum + "\n");
-                } else if (determinateSectorAndNextMove(resultOfDrum) == 1) { // Сектор +
-                    point = 0;
-                    task.sectorPlus(scanner);
-                    continue;
-                } else if (determinateSectorAndNextMove(resultOfDrum) == 2) { // Все ок
-                    point = Integer.parseInt(resultOfDrum);
-                }
-
-                System.out.print("Буква: ");
-                symbol = scanner.nextLine();
-
-                if (task.checkCharOnExist(symbol)) {
-                    players[playerNum].setPoints(point * task.getNumOfLetters());
-                } else {
-                    playerNum++;
-                    playerNum = checkOnThirdPlayer(playerNum);
-                }
+            } else if (determinateSectorAndNextMove(resultOfDrum) == 1) { // Сектор +
+                point = 0;
+                task.sectorPlus(scanner);
+                continue;
+            } else if (determinateSectorAndNextMove(resultOfDrum) == 2) { // Все ок
+                point = Integer.parseInt(resultOfDrum);
             }
 
-            displayInfo(task);
+            System.out.print("Буква: ");
+            symbol = scanner.nextLine();
 
-            System.out.println("Победил игрок " + players[playerNum].getNickname() + " и заработал" +
-                    players[playerNum].getPoints() + " баллов!");
+            if (task.checkCharOnExist(symbol)) {
+                players[playerNum].setPoints(point * task.getNumOfLetters());
+            } else {
+                playerNum++;
+                playerNum = checkOnThirdPlayer(playerNum);
+            }
+        }
 
+        displayInfo(task);
 
+        System.out.println("Победил игрок " + players[playerNum].getNickname() + " и заработал" +
+                players[playerNum].getPoints() + " баллов!");
 
-        }while (isContinue(scanner));
 
         scanner.close();
     }
