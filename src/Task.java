@@ -56,7 +56,7 @@ public class Task {
 
     public Task()
     {
-        // Таск
+        // Тас
         fillMatrixOfQuestions();
     }
 }
