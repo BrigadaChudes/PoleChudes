@@ -1,8 +1,4 @@
 package src;
-
-import java.io.FileWriter;
-import java.time.DayOfWeek;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
@@ -27,7 +23,6 @@ public class Main {
 
     static int determinateSectorAndNextMove(String resultOfDrum) {
 
-
         if (resultOfDrum.equals("переход хода")) {
             return 0;
         } else if (resultOfDrum.equals("+")) {
@@ -37,33 +32,41 @@ public class Main {
         return 2;
     }
 
-    public static boolean isContinue(Scanner scanner) {
+    public static int isContinue(Scanner scanner) {
+        boolean isIncorrect;
+        int selectedMode;
 
-        String text;
-        boolean isCorrect;
-        text = "";
-        System.out.println("\n\n Поздравляем с победой! " +
-                "\n");
+        System.out.println("\nВы хотите продолжить игру? \n1: Да;\n2: Нет.");
+
+        selectedMode = 0;
+
         do {
-            System.out.println("Вы хотите продолжить игру? Да или нет.");
-
-            isCorrect = true;
+            System.out.print("Ввод: ");
+            isIncorrect = false;
 
             try {
-                text = scanner.nextLine();
-            } catch (Exception ex) {
-                System.out.println("Ошибка: " + ex.getMessage());
-                isCorrect = false;
+                selectedMode = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException exception) {
+                System.out.println("Ошибка ввода! Было введено неккоректное значение. Повторите ввод.");
+                isIncorrect = true;
+            } catch (Exception exception) {
+                System.out.println("Иная ошибка : " + exception.getMessage());
+                isIncorrect = true;
             }
 
-            if (isCorrect && (text.toLowerCase() != "да" || text.toLowerCase() != "нет")) {
-                System.out.println("Введите: Да или Нет.");
-                isCorrect = false;
+            if (!isIncorrect && selectedMode != 1 && selectedMode != 2) {
+                System.out.println("Выбран неправильный режим.\n1: Да;\n2: Нет.");
+                isIncorrect = true;
             }
+        } while (isIncorrect);
+
+        return selectedMode;
+    }
+
+    public static void clearPointPlayers(Player[] players){
+        for (var player: players) {
+            player.clearPoints();
         }
-        while (isCorrect);
-
-        return text.toLowerCase() == "да" ? true : false;
     }
 
     public static void main(String[] args) {
@@ -73,15 +76,13 @@ public class Main {
         int point = 0, playerNum;
         String symbol, resultOfDrum;
         Boolean isExit, willContinue;
-        ;
+
         for (int i = 0; i < players.length; i++) {
             System.out.println("Игрок №" + (i + 1) + ".");
             players[i] = new Player(scanner);
         }
 
-        boolean checkOnExit;
-
-        Task task = new Task();
+        Task task = new Task(scanner);
 
         System.out.println
                 ("Здравствуйте, уважаемые дамы и господа!\n" +
@@ -90,53 +91,73 @@ public class Main {
                         players[0].getNickname() + ", " + players[1].getNickname() + ", " + players[2].getNickname()
                         + ".\n\nВ студию!");
 
-        task.generateNewQuestion();
 
-        willContinue = true;
 
-        playerNum = 0;
 
-        while (task.checkOnUnderlining()) {
+        int mode = 1;
 
-            displayInfo(task);
-            displayBalance(players);
+        while (mode == 1) {
 
-            System.out.print("Ваш ход, " + players[playerNum].getNickname() + ": ");
-            resultOfDrum = drum.spin();
-            System.out.print("\t\tНА БАРАБАНЕ \t\t" + resultOfDrum + "\n");
+            task.generateNewQuestion();
+            playerNum = 0;
+            clearPointPlayers(players);
 
-            if (determinateSectorAndNextMove(resultOfDrum) == 0) { // Переход хода
-                point = 0;
-                playerNum++;
-                playerNum = checkOnThirdPlayer(playerNum);
+            while (task.checkOnUnderlining()) {
+
+                displayInfo(task);
+                displayBalance(players);
+
                 System.out.print("Ваш ход, " + players[playerNum].getNickname() + ": ");
                 resultOfDrum = drum.spin();
                 System.out.print("\t\tНА БАРАБАНЕ \t\t" + resultOfDrum + "\n");
-            } else if (determinateSectorAndNextMove(resultOfDrum) == 1) { // Сектор +
-                point = 0;
-                task.sectorPlus(scanner);
-                continue;
-            } else if (determinateSectorAndNextMove(resultOfDrum) == 2) { // Все ок
-                point = Integer.parseInt(resultOfDrum);
+
+                if (determinateSectorAndNextMove(resultOfDrum) == 0) { // Переход хода
+                    point = 0;
+                    playerNum++;
+                    playerNum = checkOnThirdPlayer(playerNum);
+                    System.out.print("Ваш ход, " + players[playerNum].getNickname() + ": ");
+                    resultOfDrum = drum.spin();
+                    System.out.print("\t\tНА БАРАБАНЕ \t\t" + resultOfDrum + "\n");
+                } else if (determinateSectorAndNextMove(resultOfDrum) == 1) { // Сектор +
+                    point = 0;
+                    task.sectorPlus(scanner);
+                    continue;
+                } else if (determinateSectorAndNextMove(resultOfDrum) == 2) { // Все ок
+                    point = Integer.parseInt(resultOfDrum);
+                }
+
+                boolean check;
+
+                do {
+                    check = false;
+
+                    System.out.print("Буква: ");
+                    symbol = scanner.nextLine();
+
+                    for (int i = 0; i < task.getLengthUnknownWord(); i++) {
+                        if (Character.toString(task.getUnknownWord()[i]).equals(symbol)) {
+                            System.out.println("Эта буква уже открыта! Повторите ввод.");
+                            check = true;
+                        }
+                    }
+
+                } while (check);
+
+                if (task.checkCharOnExist(symbol)) {
+                    players[playerNum].setPoints(point * task.getNumOfLetters());
+                } else {
+                    playerNum++;
+                    playerNum = checkOnThirdPlayer(playerNum);
+                }
             }
 
-            System.out.print("Буква: ");
-            symbol = scanner.nextLine();
+            displayInfo(task);
 
-            if (task.checkCharOnExist(symbol)) {
-                players[playerNum].setPoints(point * task.getNumOfLetters());
-            } else {
-                playerNum++;
-                playerNum = checkOnThirdPlayer(playerNum);
-            }
+            System.out.println("\nПобедил игрок " + players[playerNum].getNickname() + " и заработал " +
+                    players[playerNum].getPoints() + " баллов!");
+
+            mode = isContinue(scanner);
         }
-
-        displayInfo(task);
-
-        System.out.println("Победил игрок " + players[playerNum].getNickname() + " и заработал" +
-                players[playerNum].getPoints() + " баллов!");
-
-
         scanner.close();
     }
 }

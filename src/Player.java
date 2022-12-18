@@ -24,6 +24,10 @@ public class Player {
         this.points += points;
     }
 
+    public void clearPoints(){
+        this.points = 0;
+    }
+
     public Player(Scanner scanner) {
         boolean isCorrect;
 

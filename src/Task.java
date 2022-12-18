@@ -8,15 +8,6 @@ public class Task {
     private String answer;
     private int numOfLetters;
 
-    public boolean checkOnUnderlining(){
-        boolean isCheck;
-        for (var item: this.getUnknownWord()){
-            if (item == '_')
-                return true;
-        }
-        return false;
-    }
-
     private char [] unknownWord = new char[100];
 
     private String [][] matrixOfQuestions = new String [100][2];
@@ -37,8 +28,21 @@ public class Task {
         return answer.toCharArray();
     }
 
-    private void fillMatrixOfQuestions(){
-        File file = new File("C:\\Users\\fedor\\Desktop\\БГУИР\\ОАиП\\Лабораторная №2\\2.2\\f.txt");
+    public boolean checkOnUnderlining(){
+        boolean isCheck;
+        for (var item: this.getUnknownWord()){
+            if (item == '_')
+                return true;
+        }
+        return false;
+    }
+
+    private void fillMatrixOfQuestions(Scanner scanner){
+        String path;
+        System.out.println("Введите путь к файлу:");
+        path = scanner.nextLine();
+
+        File file = new File(path);
         String readedLine;
         String [] arr;
         int counter = 0;
@@ -60,35 +64,35 @@ public class Task {
 
     }
 
-    public void sectorPlus(Scanner scanner){
-        boolean isCorrect;
+    public void sectorPlus(Scanner scanner) {
+        boolean isIncorrect;
         int orderOfLetter = 0;
 
         do {
-            isCorrect = true;
+            isIncorrect = false;
 
             System.out.print("Введите букву, которую нужно открыть: ");
 
             try {
                 orderOfLetter = Integer.parseInt(scanner.nextLine());
-            }catch (Exception exception){
+            } catch (Exception exception) {
                 System.out.println("Было введено неправильное значение. Повторите ввод.");
-                isCorrect = false;
+                isIncorrect = true;
             }
 
-            if(!isCorrect && (this.answer.length() < orderOfLetter || orderOfLetter <= 0)){
+            if (!isIncorrect && (this.answer.length() < orderOfLetter || orderOfLetter <= 0)) {
                 System.out.println("Порядок буквы больше длины загадонного слова.");
-                isCorrect = false;
+                isIncorrect = true;
             }
 
-            if (!isCorrect && this.unknownWord[orderOfLetter] != '_'){
+            if (!isIncorrect && this.unknownWord[orderOfLetter] != '_') {
                 System.out.println("Была выбрана уже открытая буква!");
-                isCorrect = false;
+                isIncorrect = true;
             }
 
-        }while (!isCorrect);
+        } while (isIncorrect);
 
-        this.unknownWord[orderOfLetter-1] = this.getAnswer()[orderOfLetter-1];
+        this.unknownWord[orderOfLetter - 1] = this.getAnswer()[orderOfLetter - 1];
     }
 
     public static int rnd(int max)
@@ -97,7 +101,7 @@ public class Task {
     }
 
     public void generateNewQuestion(){
-        int link = rnd(9);
+        int link = rnd(2);
         this.questionText = matrixOfQuestions[link][0];
         this.answer = matrixOfQuestions[link][1];
         for(int i = 0; i < answer.length(); i++)
@@ -123,8 +127,8 @@ public class Task {
         return isExist;
     }
 
-    public Task()
+    public Task(Scanner scanner)
     {
-        fillMatrixOfQuestions();
+        fillMatrixOfQuestions(scanner);
     }
 }
