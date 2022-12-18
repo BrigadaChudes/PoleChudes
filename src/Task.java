@@ -37,31 +37,65 @@ public class Task {
         return false;
     }
 
+    public static String getPathToFile(Scanner scanner) {
+        boolean isIncorrect;
+        String pathToFile;
+
+        pathToFile = "";
+
+        do {
+            isIncorrect = false;
+
+            if (isIncorrect) {
+                System.out.println("Ошибка открытия файла! Повторите попытку.");
+            }
+
+            System.out.print("Введите путь к файлу: ");
+
+            try {
+                pathToFile = scanner.nextLine();
+            } catch (Exception exception) {
+                System.out.println("Ошибка : " + exception.getMessage());
+                scanner.next();
+                isIncorrect = true;
+            }
+
+        } while (isIncorrect);
+
+        return pathToFile;
+    }
+
     private void fillMatrixOfQuestions(Scanner scanner){
         String path;
-        System.out.println("Введите путь к файлу:");
-        path = scanner.nextLine();
+        boolean isIncorrect;
 
-        File file = new File(path);
-        String readedLine;
-        String [] arr;
-        int counter = 0;
+        do{
+            isIncorrect = false;
 
-        try(var bufferedReader = new BufferedReader(new FileReader(file))){
-           while((readedLine = bufferedReader.readLine()) != null && counter <= 100){
-               arr = readedLine.split(" <> ");
+            path = getPathToFile(scanner);
 
-               matrixOfQuestions[counter][0] = arr[0];
-               matrixOfQuestions[counter][1] = arr[1];
+            File file = new File(path);
+            String readedLine;
+            String[] arr;
+            int counter = 0;
 
-               counter++;
-           }
-        } catch (FileNotFoundException e) {
-            System.out.println("Файл не был найден. Обратитесь к сис. админу.");
-        } catch (IOException e) {
-            System.out.println("Ошибка: " + e.getMessage());
-        }
+            try (var bufferedReader = new BufferedReader(new FileReader(file))) {
+                while ((readedLine = bufferedReader.readLine()) != null && counter <= 100) {
+                    arr = readedLine.split(" <> ");
 
+                    matrixOfQuestions[counter][0] = arr[0];
+                    matrixOfQuestions[counter][1] = arr[1];
+
+                    counter++;
+                }
+            } catch (FileNotFoundException e) {
+                isIncorrect = true;
+                System.out.println("Файл не был найден.");
+            } catch (IOException e) {
+                System.out.println("Ошибка: " + e.getMessage());
+                isIncorrect = true;
+            }
+        } while (isIncorrect);
     }
 
     public void sectorPlus(Scanner scanner) {

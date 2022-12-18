@@ -91,9 +91,6 @@ public class Main {
                         players[0].getNickname() + ", " + players[1].getNickname() + ", " + players[2].getNickname()
                         + ".\n\nВ студию!");
 
-
-
-
         int mode = 1;
 
         while (mode == 1) {
@@ -146,6 +143,7 @@ public class Main {
                 if (task.checkCharOnExist(symbol)) {
                     players[playerNum].setPoints(point * task.getNumOfLetters());
                 } else {
+                    System.out.println("Что вы говорите? Такой буквы нет.");
                     playerNum++;
                     playerNum = checkOnThirdPlayer(playerNum);
                 }
